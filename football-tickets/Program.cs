@@ -1,6 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
-
-using ConsoleApp5;
+using ConsoleApp7;
 
 Stadium stadium = new Stadium(10000);
 
