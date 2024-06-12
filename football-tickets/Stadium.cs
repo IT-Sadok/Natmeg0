@@ -8,19 +8,19 @@ namespace ConsoleApp5
 {
     public class Stadium
     {
-        private int _allTickets;
-        private int _soldTickets;
+        private int _maxSeats;
+        private int _reservedSeats;
 
         public Stadium(int totalTickets)
         {
-            _allTickets = totalTickets;
-            _soldTickets = 0;
+            _maxSeats = totalTickets;
+            _reservedSeats = 0;
         }
         public bool BuyTicket()
         {
-            if (_soldTickets < _allTickets)
+            if (_reservedSeats < _maxSeats)
             {
-                _soldTickets += 1;
+                _reservedSeats += 1;
                 return true;
             }
             return false;
@@ -28,16 +28,16 @@ namespace ConsoleApp5
 
         public bool ReturnTicket()
         {
-            if (_soldTickets > 0)
+            if (_reservedSeats > 0)
             {
-                _soldTickets -= 1;
+                _reservedSeats -= 1;
                 return true;
             }
             return false;
         }
         public int GetAvailableTickets()
         {
-            return _allTickets - _soldTickets;
+            return _maxSeats - _reservedSeats;
         }
     }
 }
