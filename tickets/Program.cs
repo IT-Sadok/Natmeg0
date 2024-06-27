@@ -1,4 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
+// See https://aka.ms/new-console-template for more information
 
 using ConsoleApp8;
 
@@ -7,7 +7,7 @@ Stadion stadion = new Stadion(2);
 while (true)
 {
     Console.WriteLine("Write the command you want to choose: Buy or Return a ticket.");
-    string command = Console.ReadLine();
+    string command = Console.ReadLine().ToLower();
 
     switch (command)
     {
@@ -40,5 +40,3 @@ while (true)
             break;
     }
 }
-    
-

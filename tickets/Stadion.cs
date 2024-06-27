@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,33 +9,35 @@ namespace ConsoleApp8
     public class Stadion
     {
         private int _maxSeats;
-        private int _reservedSeats;
+        private List<Ticket> _tickets;
 
         public Stadion(int totalTickets)
         {
             _maxSeats = totalTickets;
-            _reservedSeats = 0;
+            _tickets = new List<Ticket>();
         }
         public void BuyTicket()
         {
-            if (_reservedSeats >= _maxSeats)
+            if (_tickets.Count >= _maxSeats)
             {
                 throw new InvalidOperationException("Tickets are out");   
             }
-            _reservedSeats += 1;
+            _tickets.Add(new Ticket());
+           
+             
         }
 
         public void ReturnTicket()
         {
-            if (_reservedSeats <= 0)
+            if (_tickets.Count <= 0)
             {
                 throw new InvalidOperationException("No tickets to return");     
             }
-            _reservedSeats -= 1;
+            _tickets.RemoveAt(0);
         }
         public int GetAvailableTickets()
         {
-            return _maxSeats - _reservedSeats;
+            return _maxSeats - _tickets.Count;
         }
     }
 }
