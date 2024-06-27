@@ -14,7 +14,7 @@ namespace ConsoleApp8
         public Ticket()
         {
             ID = Guid.NewGuid();
-            DateCreated = DateTime.Now;
+            DateCreated = DateTime.UtcNow;
         }
     }
 }
