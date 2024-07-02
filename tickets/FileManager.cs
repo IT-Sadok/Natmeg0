@@ -7,24 +7,26 @@ using System.Text.Json;
 
 namespace ConsoleApp8
 {
-    public class FileManager
+    public class FileManager<T>
     {
-        private const string filePath = "tickets.json";
+        private const string _filePath = "tickets.json";
 
-        void Save(List<Ticket> tickets)
+        public FileManager() { }
+        
+        public void Save(List<T> tickets)
         {
             string json = JsonSerializer.Serialize(tickets);
-            File.WriteAllText(filePath, json);
+            File.WriteAllText(_filePath, json);
         }
 
-       public List<Ticket> Read()
+       public List<T> Read()
         {
-            if (File.Exists(filePath))
+            if (File.Exists(_filePath))
             {
-                string json = File.ReadAllText(filePath);
-                return JsonSerializer.Deserialize<List<Ticket>>(json);
+                string json = File.ReadAllText(_filePath);
+                return JsonSerializer.Deserialize<List<T>>(json);
             }
-            return new List<Ticket>();
+            return new List<T>();
         }
        
        
