@@ -1,43 +1,44 @@
+using ConsoleApp8;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using System.Text.Json;
 
-namespace ConsoleApp8
+public class Stadion
 {
-    public class Stadion
+    private int _maxSeats;
+    private List<Ticket> _tickets;
+    private FileManager<Ticket> _fileManager;
+
+    public Stadion(int totalTickets)
     {
-        private int _maxSeats;
-        private List<Ticket> _tickets;
+        _maxSeats = totalTickets;
+        _fileManager = new FileManager<Ticket>();
+        
+    }
 
-        public Stadion(int totalTickets)
+    public void BuyTicket()
+    {
+        if (_tickets.Count >= _maxSeats)
         {
-            _maxSeats = totalTickets;
-            _tickets = new List<Ticket>();
+            throw new InvalidOperationException("Tickets are out");
         }
-        public void BuyTicket()
-        {
-            if (_tickets.Count >= _maxSeats)
-            {
-                throw new InvalidOperationException("Tickets are out");   
-            }
-            _tickets.Add(new Ticket());
-           
-             
-        }
+        _tickets.Add(new Ticket());
+        _fileManager.Save(_tickets); 
+    }
 
-        public void ReturnTicket()
+    public void ReturnTicket()
+    {
+        if (_tickets.Count <= 0)
         {
-            if (_tickets.Count <= 0)
-            {
-                throw new InvalidOperationException("No tickets to return");     
-            }
-            _tickets.RemoveAt(0);
+            throw new InvalidOperationException("No tickets to return");
         }
-        public int GetAvailableTickets()
-        {
-            return _maxSeats - _tickets.Count;
-        }
+        _tickets.RemoveAt(0);
+        _fileManager.Save(_tickets); 
+    }
+
+    public int GetAvailableTickets()
+    {
+        return _maxSeats - _tickets.Count;
     }
 }
