@@ -8,28 +8,29 @@ using System.Text.Json;
 namespace ConsoleApp8
 {
     public class FileManager<T>
+{
+    private string _filePath;
+
+    public FileManager()
     {
-        private const string _filePath = "tickets.json";
-
-        public FileManager() { }
-        
-        public void Save(List<T> tickets)
-        {
-            string json = JsonSerializer.Serialize(tickets);
-            File.WriteAllText(_filePath, json);
-        }
-
-       public List<T> Read()
-        {
-            if (File.Exists(_filePath))
-            {
-                string json = File.ReadAllText(_filePath);
-                return JsonSerializer.Deserialize<List<T>>(json);
-            }
-            return new List<T>();
-        }
-       
-       
+        _filePath = $"{typeof(T).Name}.json";
     }
+
+    public void Save(T data)
+    {
+        string json = JsonSerializer.Serialize(data);
+        File.WriteAllText(_filePath, json);
+    }
+
+    public T? Read()
+    {
+        if (File.Exists(_filePath))
+        {
+            string json = File.ReadAllText(_filePath);
+            return JsonSerializer.Deserialize<T>(json);
+        }
+        return default(T);
+    }
+}
 
 }
