@@ -22,9 +22,7 @@ namespace ConsoleApp8
             {
                 throw new InvalidOperationException("Tickets are out");   
             }
-            _tickets.Add(new Ticket());
-           
-             
+            _tickets.Add(new Ticket());    
         }
 
         public void ReturnTicket()
