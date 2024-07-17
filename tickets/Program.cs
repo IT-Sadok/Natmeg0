@@ -14,8 +14,8 @@ while (true)
         case "buy":
             try
             {
-                stadion.BuyTicket();
-                Console.WriteLine($"You bought a ticket. Tickets left: {stadion.GetAvailableTickets()}");
+                Ticket buyTicket = stadion.BuyTicket();
+                Console.WriteLine($"You bought a ticket, ID:{buyTicket.ID} Tickets left: {stadion.GetAvailableTickets()}");
             }
             catch (InvalidOperationException ex)
             {
@@ -26,11 +26,11 @@ while (true)
         case "return":
             Console.WriteLine("Write the ID to return the Ticket");
             string idInput = Console.ReadLine().ToLower();
-            if (Guid.TryParse(idInput, out Guid ticketId))
+            if (Guid.TryParse(idInput, out Guid TicketID))
             {
                 try
                 {
-                    stadion.RequestReturnTicket(ticketId);
+                    stadion.RequestReturnTicket(TicketID);
                     Console.WriteLine($"Ticket returned. Tickets left: {stadion.GetAvailableTickets()}");
                 }
                 catch (InvalidOperationException ex)
@@ -52,11 +52,11 @@ while (true)
 
             if(DateTime.TryParse(startDateInput, out DateTime startDate) && DateTime.TryParse(endDateInput, out DateTime endDate))
             {
-                var RangeOfTickets = stadion.SearchTicketByDateRange(startDate, endDate);
-                if (RangeOfTickets.Count > 0)
+                var tickets = stadion.SearchTicketByDateRange(startDate, endDate);
+                if (tickets.Count > 0)
                 {
                     Console.WriteLine("Tickets found:");
-                    foreach (var Ticket in RangeOfTickets)
+                    foreach (var Ticket in tickets)
                     {
                         Console.WriteLine($"ID: {Ticket.ID}, Created date:{Ticket.DateCreated}");
                         
