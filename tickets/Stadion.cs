@@ -10,15 +10,15 @@ namespace ConsoleApp8
     {
         private int _maxSeats;
         private Dictionary<Guid, Ticket> _tickets;
-        Queue<Guid> _returnQueue;
+        private List<Guid> _returnRequests;
 
         public Stadion(int totalTickets)
         {
             _maxSeats = totalTickets;
             _tickets = new Dictionary<Guid, Ticket>();
-            _returnQueue = new Queue<Guid>();
+            _returnRequests = new List<Guid>();
         }
-        public void BuyTicket()
+        public Ticket BuyTicket()
         {
             if (_tickets.Count >= _maxSeats)
             {
@@ -27,6 +27,7 @@ namespace ConsoleApp8
 
             Ticket newTicket = new Ticket();
             _tickets.Add(newTicket.ID, newTicket);
+            return newTicket;
         }
 
         public void RequestReturnTicket(Guid TicketID)
@@ -35,16 +36,18 @@ namespace ConsoleApp8
             {
                 throw new InvalidOperationException("Ticket with this ID not found");     
             }
-            _returnQueue.Enqueue(TicketID);
-            Console.WriteLine($"A request to return a ticket with ID: {TicketID} has been added to the queue.");
+            _returnRequests.Add(TicketID);
         }
 
         public void ProcessReturnRequests()
         {
-            while(_returnQueue.Count > 0)
+            foreach (var TicketID in _returnRequests)
             {
-                Guid TicketID = _returnQueue.Dequeue();
-                _tickets.Remove(TicketID);
+                if (_tickets.ContainsKey(TicketID))
+                {
+                    Console.WriteLine($"Ticket with ID:{TicketID} has been returned. Tickets left:{GetAvailableTickets}");
+                }
+                
             }
         }
         public int GetAvailableTickets()
