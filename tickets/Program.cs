@@ -31,6 +31,7 @@ while (true)
                 try
                 {
                     stadion.ReturnTicket(TicketID);
+                    Console.WriteLine($"Ticket with ID:{TicketID} has been returned. Tickets left:{stadion.GetAvailableTickets}");
                 }
 
                 catch (InvalidOperationException ex)
