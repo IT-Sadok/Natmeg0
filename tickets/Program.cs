@@ -30,9 +30,9 @@ while (true)
             {
                 try
                 {
-                    stadion.RequestReturnTicket(TicketID);
-                    Console.WriteLine($"Ticket returned. Tickets left: {stadion.GetAvailableTickets()}");
+                    stadion.ReturnTicket(TicketID);
                 }
+
                 catch (InvalidOperationException ex)
                 {
                     Console.WriteLine($"Error: {ex.Message}");
@@ -52,14 +52,13 @@ while (true)
 
             if(DateTime.TryParse(startDateInput, out DateTime startDate) && DateTime.TryParse(endDateInput, out DateTime endDate))
             {
-                var tickets = stadion.SearchTicketByDateRange(startDate, endDate);
+                var tickets = stadion.Search(startDate, endDate);
                 if (tickets.Count > 0)
                 {
                     Console.WriteLine("Tickets found:");
                     foreach (var Ticket in tickets)
                     {
-                        Console.WriteLine($"ID: {Ticket.ID}, Created date:{Ticket.DateCreated}");
-                        
+                        Console.WriteLine($"ID: {Ticket.ID}, Created date:{Ticket.DateCreated}");    
                     }
                 }
                 else
@@ -73,7 +72,7 @@ while (true)
             }
             break;
         case "recent":
-            var mostRecentTicket = stadion.GetRecentTicket();
+            var mostRecentTicket = stadion.Recent();
             if (mostRecentTicket != null)
             {
                 Console.WriteLine($"The most recent ticket - ID:{mostRecentTicket.ID},  Created date:{mostRecentTicket.DateCreated}");
