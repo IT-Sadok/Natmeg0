@@ -35,7 +35,7 @@ namespace ConsoleApp8
                 throw new InvalidOperationException("Ticket with this ID not found");     
             }
             _tickets.Remove(TicketID);
-            Console.WriteLine($"Ticket with ID:{TicketID} has been returned. Tickets left:{GetAvailableTickets()}");
+            
         }
 
         
@@ -47,14 +47,14 @@ namespace ConsoleApp8
         public List<Ticket> Search(DateTime startDate, DateTime endDate)
         {
             return _tickets.Values
-                 .Where(Ticket => Ticket.DateCreated >= startDate && Ticket.DateCreated <= endDate)
+                 .Where( t => t.DateCreated >= startDate && t.DateCreated <= endDate)
                  .ToList();
         }
 
         public Ticket? Recent()
         {
             return _tickets.Values
-                .OrderByDescending(Ticket => Ticket.DateCreated)
+                .OrderByDescending(t => t.DateCreated)
                 .FirstOrDefault();
         }
     }
