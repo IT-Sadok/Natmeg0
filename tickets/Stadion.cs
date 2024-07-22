@@ -10,13 +10,11 @@ namespace ConsoleApp8
     {
         private int _maxSeats;
         private Dictionary<Guid, Ticket> _tickets;
-        private List<Guid> _returnRequests;
-
+        
         public Stadion(int totalTickets)
         {
             _maxSeats = totalTickets;
             _tickets = new Dictionary<Guid, Ticket>();
-            _returnRequests = new List<Guid>();
         }
         public Ticket BuyTicket()
         {
@@ -30,46 +28,34 @@ namespace ConsoleApp8
             return newTicket;
         }
 
-        public void RequestReturnTicket(Guid TicketID)
+        public void ReturnTicket(Guid TicketID)
         {
             if (!_tickets.ContainsKey(TicketID))
             {
                 throw new InvalidOperationException("Ticket with this ID not found");     
             }
-            _returnRequests.Add(TicketID);
+            _tickets.Remove(TicketID);
+            Console.WriteLine($"Ticket with ID:{TicketID} has been returned. Tickets left:{GetAvailableTickets()}");
         }
 
-        public void ProcessReturnRequests()
-        {
-            foreach (var TicketID in _returnRequests)
-            {
-                if (_tickets.ContainsKey(TicketID))
-                {
-                    Console.WriteLine($"Ticket with ID:{TicketID} has been returned. Tickets left:{GetAvailableTickets}");
-                }
-                
-            }
-        }
+        
         public int GetAvailableTickets()
         {
             return _maxSeats - _tickets.Count;
         }
 
-        public List<Ticket> SearchTicketByDateRange(DateTime startDate, DateTime endDate)
+        public List<Ticket> Search(DateTime startDate, DateTime endDate)
         {
-            var ticketsInRange = (from Ticket in _tickets.Values
-                                  where Ticket.DateCreated >= startDate && Ticket.DateCreated <= endDate
-                                  select Ticket).ToList();
-
-            return ticketsInRange;
+            return _tickets.Values
+                 .Where(Ticket => Ticket.DateCreated >= startDate && Ticket.DateCreated <= endDate)
+                 .ToList();
         }
 
-        public Ticket? GetRecentTicket()
+        public Ticket? Recent()
         {
-            var recentTicket = (from Ticket in _tickets.Values
-                                orderby Ticket.DateCreated descending
-                                select Ticket).FirstOrDefault();
-            return recentTicket;
+            return _tickets.Values
+                .OrderByDescending(Ticket => Ticket.DateCreated)
+                .FirstOrDefault();
         }
     }
 }
