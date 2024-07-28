@@ -9,33 +9,53 @@ namespace ConsoleApp8
     public class Stadion
     {
         private int _maxSeats;
-        private List<Ticket> _tickets;
-
+        private Dictionary<Guid, Ticket> _tickets;
+        
         public Stadion(int totalTickets)
         {
             _maxSeats = totalTickets;
-            _tickets = new List<Ticket>();
+            _tickets = new Dictionary<Guid, Ticket>();
         }
-        public void BuyTicket()
+        public Ticket BuyTicket()
         {
             if (_tickets.Count >= _maxSeats)
             {
-                throw new InvalidOperationException("Tickets are out");   
+                throw new InvalidOperationException("Tickets are out");
             }
-            _tickets.Add(new Ticket());    
+
+            Ticket newTicket = new Ticket();
+            _tickets.Add(newTicket.ID, newTicket);
+            return newTicket;
         }
 
-        public void ReturnTicket()
+        public void ReturnTicket(Guid TicketID)
         {
-            if (_tickets.Count <= 0)
+            if (!_tickets.ContainsKey(TicketID))
             {
-                throw new InvalidOperationException("No tickets to return");     
+                throw new InvalidOperationException("Ticket with this ID not found");     
             }
-            _tickets.RemoveAt(0);
+            _tickets.Remove(TicketID);
+            
         }
+
+        
         public int GetAvailableTickets()
         {
             return _maxSeats - _tickets.Count;
+        }
+
+        public List<Ticket> Search(DateTime startDate, DateTime endDate)
+        {
+            return _tickets.Values
+                 .Where( t => t.DateCreated >= startDate && t.DateCreated <= endDate)
+                 .ToList();
+        }
+
+        public Ticket? Recent()
+        {
+            return _tickets.Values
+                .OrderByDescending(t => t.DateCreated)
+                .FirstOrDefault();
         }
     }
 }
