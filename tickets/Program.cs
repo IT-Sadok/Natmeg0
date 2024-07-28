@@ -6,7 +6,7 @@ Stadion stadion = new Stadion(2);
 
 while (true)
 {
-    Console.WriteLine("Write the command you want to choose: buy, return, recent or search a ticket.");
+    Console.WriteLine("Write the command you want to choose: buy, return, recent, search, update a ticket.");
     string command = Console.ReadLine().ToLower();
 
     switch (command)
@@ -14,7 +14,7 @@ while (true)
         case "buy":
             try
             {
-                Ticket buyTicket = stadion.BuyTicket();
+                Ticket buyTicket = await stadion.BuyTicketAsync();
                 Console.WriteLine($"You bought a ticket, ID:{buyTicket.ID} Tickets left: {stadion.GetAvailableTickets()}");
             }
             catch (InvalidOperationException ex)
@@ -30,8 +30,8 @@ while (true)
             {
                 try
                 {
-                    stadion.ReturnTicket(TicketID);
-                    Console.WriteLine($"Ticket with ID:{TicketID} has been returned. Tickets left:{stadion.GetAvailableTickets}");
+                   await stadion.ReturnTicketAsync(TicketID);
+                    Console.WriteLine($"Ticket with ID:{TicketID} has been returned. Tickets left:{stadion.GetAvailableTickets()}");
                 }
 
                 catch (InvalidOperationException ex)
@@ -42,6 +42,19 @@ while (true)
             else
             {
                 Console.WriteLine("Wrong ID");
+            }
+            break;
+
+        case "update":
+
+            try
+            {
+                await stadion.UpdateTicketAsync();
+                Console.WriteLine("Ticket has been updated.");
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
             }
             break;
 
@@ -64,7 +77,7 @@ while (true)
                 }
                 else
                 {
-                    Console.WriteLine("\"There are no tickets available in the specified date range");
+                    Console.WriteLine("There are no tickets available in the specified date range");
                 }
             }
             else
@@ -85,7 +98,7 @@ while (true)
             break;
 
         default:
-            Console.WriteLine("Invalid command. Choose buy, return, recent or search.");
+            Console.WriteLine("Invalid command. Choose buy, return, recent, search, update.");
             break;
     }
 }
