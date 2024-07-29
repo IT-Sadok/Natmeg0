@@ -2,7 +2,23 @@
 
 using ConsoleApp8;
 
-Stadion stadion = new Stadion(2);
+Stadion stadion = new Stadion(100);
+
+var buyTasks = new List<Task<Ticket>>();
+for (int i =0; i < 100; i++)
+{
+    buyTasks.Add(stadion.BuyTicketAsync());
+}
+
+try
+{
+    var tickets = await Task.WhenAll(buyTasks);
+    Console.WriteLine("All 100 tickets bought.");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Error: {ex.Message}");
+}
 
 while (true)
 {
@@ -49,7 +65,7 @@ while (true)
 
             try
             {
-                await stadion.UpdateTicketAsync();
+                await stadion.UpdateAllTicketsDatesAsync();
                 Console.WriteLine("Ticket has been updated.");
             }
             catch (InvalidOperationException ex)
