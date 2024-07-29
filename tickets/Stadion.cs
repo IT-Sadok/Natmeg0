@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,20 +10,20 @@ namespace ConsoleApp8
     public class Stadion
     {
         private int _maxSeats;
-        private Dictionary<Guid, Ticket> _tickets;
-        private SemaphoreSlim _buysemaphore = new SemaphoreSlim(2);
-        private SemaphoreSlim _returnsemaphore = new SemaphoreSlim(2);
+        private ConcurrentDictionary<Guid, Ticket> _tickets;
+        private SemaphoreSlim _semaphore = new SemaphoreSlim(2);
+       
         public Stadion(int totalTickets)
         {
             _maxSeats = totalTickets;
-            _tickets = new Dictionary<Guid, Ticket>();
+            _tickets = new ConcurrentDictionary<Guid, Ticket>();
         }
         public async Task<Ticket> BuyTicketAsync()
         {
-            await _buysemaphore.WaitAsync();
+            await _semaphore.WaitAsync();
             try
             {
-                await Task.Delay(2000);
+                await Task.Delay(1000);
 
                 if (_tickets.Count >= _maxSeats)
                 {
@@ -30,18 +31,18 @@ namespace ConsoleApp8
                 }
               
                 Ticket newTicket = new Ticket();
-                _tickets.Add(newTicket.ID, newTicket);
+                _tickets.TryAdd(newTicket.ID, newTicket);
                 return newTicket;
             }
             finally
             {
-                _buysemaphore.Release();
+                _semaphore.Release();
             }   
         }
 
         public async Task ReturnTicketAsync(Guid TicketID)
         {
-            await _returnsemaphore.WaitAsync();
+            await _semaphore.WaitAsync();
 
             try
             {
@@ -51,17 +52,17 @@ namespace ConsoleApp8
                 {
                     throw new InvalidOperationException("Ticket with this ID not found");
                 }
-                _tickets.Remove(TicketID);
+                _tickets.TryRemove(TicketID, out _);
             }
             finally
             {
-                _returnsemaphore.Release();
+                _semaphore.Release();
             }    
         }
 
-        public async Task UpdateTicketAsync(Guid TicketID)
+        public async Task UpdateCreationTicketAsync(Guid TicketID)
         {
-            await Task.Delay(2000);
+            await Task.Delay(1000);
 
             if(_tickets.TryGetValue(TicketID, out Ticket? ticket))
             {
@@ -73,9 +74,9 @@ namespace ConsoleApp8
             }
         }
 
-        public async Task UpdateTicketAsync()
+        public async Task UpdateAllTicketsDatesAsync()
         {
-            var tasks = _tickets.Keys.Select(UpdateTicketAsync);
+            var tasks = _tickets.Keys.Select(UpdateCreationTicketAsync);
             await Task.WhenAll(tasks);
         }
 
