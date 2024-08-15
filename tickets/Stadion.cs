@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,36 +10,76 @@ namespace ConsoleApp8
     public class Stadion
     {
         private int _maxSeats;
-        private Dictionary<Guid, Ticket> _tickets;
-        
+        private ConcurrentDictionary<Guid, Ticket> _tickets;
+        private SemaphoreSlim _semaphore = new SemaphoreSlim(2);
+       
         public Stadion(int totalTickets)
         {
             _maxSeats = totalTickets;
-            _tickets = new Dictionary<Guid, Ticket>();
+            _tickets = new ConcurrentDictionary<Guid, Ticket>();
         }
-        public Ticket BuyTicket()
+        public async Task<Ticket> BuyTicketAsync()
         {
-            if (_tickets.Count >= _maxSeats)
+            await _semaphore.WaitAsync();
+            try
             {
-                throw new InvalidOperationException("Tickets are out");
-            }
+                await Task.Delay(1000);
 
-            Ticket newTicket = new Ticket();
-            _tickets.Add(newTicket.ID, newTicket);
-            return newTicket;
+                if (_tickets.Count >= _maxSeats)
+                {
+                    throw new InvalidOperationException("Tickets are out");
+                }
+              
+                Ticket newTicket = new Ticket();
+                _tickets.TryAdd(newTicket.ID, newTicket);
+                return newTicket;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }   
         }
 
-        public void ReturnTicket(Guid TicketID)
+        public async Task ReturnTicketAsync(Guid TicketID)
         {
-            if (!_tickets.ContainsKey(TicketID))
+            await _semaphore.WaitAsync();
+
+            try
             {
-                throw new InvalidOperationException("Ticket with this ID not found");     
+                await Task.Delay(1000);
+
+                if (!_tickets.ContainsKey(TicketID))
+                {
+                    throw new InvalidOperationException("Ticket with this ID not found");
+                }
+                _tickets.TryRemove(TicketID, out _);
             }
-            _tickets.Remove(TicketID);
-            
+            finally
+            {
+                _semaphore.Release();
+            }    
         }
 
-        
+        public async Task UpdateCreationTicketAsync(Guid TicketID)
+        {
+            await Task.Delay(1000);
+
+            if(_tickets.TryGetValue(TicketID, out Ticket? ticket))
+            {
+                ticket.DateCreated = DateTime.UtcNow;
+            }
+            else
+            {
+                throw new InvalidOperationException("Ticket not found");
+            }
+        }
+
+        public async Task UpdateAllTicketsDatesAsync()
+        {
+            var tasks = _tickets.Keys.Select(UpdateCreationTicketAsync);
+            await Task.WhenAll(tasks);
+        }
+
         public int GetAvailableTickets()
         {
             return _maxSeats - _tickets.Count;
